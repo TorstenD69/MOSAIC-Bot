@@ -1,0 +1,34 @@
+{
+    "messages": {
+        "start_message_title": {
+            "de": "MOSAIC Expedition 2019/2020",
+            "en": "MOSAIC Expedition 2019/2020"
+        },
+        "start_message_text": {
+            "de": "Hallo,\nes freut mich, dass Du Dich so wie ich für die MOSAIC Expedition (https://mosaic-expedition.org) interessierst. Mit diesem Bot kannst Du Dir jeden Tag den aktuellen Eintrag aus dem MOSAIC Blog (https://follow.mosaic-expedition.org) anzeigen lassen",
+            "en": "Start message tbd"
+        },
+        "nothing_found": {
+            "de": "Wir konnten zu Deiner Anfrage leider nichts finden",
+            "en": "Nothing found"
+        },
+        "date_out_of_range": {
+            "de": "Für dieses Datum ist kein Eintrag vorhanden.",
+            "en": ""
+        },
+        "date_in_future": {
+            "de": "Das Datum liegt in der Zukunft.",
+            "en": "Date is in the future."
+        },
+        "input": {
+            "de": "Welchen Eintrag darf ich Dir anzeigen?",
+            "en": "Which entry can I show you?"
+        }
+    },
+    "buttons": {
+        "last": {
+            "de": "Aktuell",
+            "en": "Latest"
+        }
+    }
+}

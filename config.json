@@ -1,0 +1,5 @@
+{
+    "data_path": "/mnt/c/Users/torsten/OneDrive/Dokumente/Development/Python/mosaic_expedition/data",
+    "data_file": "mosaic_data",
+    "mosaic_url": "https://follow.mosaic-expedition.org/wp-json/data-api/v1/data?nonce=19840730"
+}
