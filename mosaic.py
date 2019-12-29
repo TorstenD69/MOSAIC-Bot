@@ -15,11 +15,22 @@ from telegram.ext import Dispatcher, Filters
 FILE_TYPE = 'json'
 
 # Constants for inline keyboard
-LAST = "last"
-YESTERDAY = 2
+KEYBOARD_BUTTONS = {
+    'last': '1',
+    'second': '2',
+    'calendar': '3'
+}
 
 # Constants for Keyboard layer
-TOP = 1
+KEYBOARD_LAYER = {
+    'top': 1
+}
+
+# Error constants
+error = {
+    'common': 'An error occurred',
+    'os_err': 'An OS error occurred'
+}
 
 
 def main():
@@ -45,7 +56,7 @@ def main():
         # mosaic_blog_today =
 
     except Exception as err:
-        logging.error(f'An error occurred: {err}')
+        logging.error(f'{error["common"]}: {err}')
 
 
 def get_bot_token() -> str:
@@ -57,14 +68,15 @@ def get_bot_token() -> str:
             token_file.close()
 
         return(str(token))
-    
+
     except OSError as err:
-        logging.error(f'An OS error occurred: {err}')
+        logging.error(f'{error["os_err"]}: {err}')
         sys.exit()
 
     except:
-        logging.error('An error occurred')
+        logging.error(error['common'])
         sys.exit()
+
 
 def data_read_blog_from_file(config: dict) -> dict:
 
@@ -82,20 +94,19 @@ def data_read_blog_from_file(config: dict) -> dict:
             return(mosaic_data['blog'])
 
     except OSError as err:
-        logging.error(f'An OS error occurred: {err}')
+        logging.error(f'{error["os_err"]}: {err}')
         sys.exit()
 
     except:
-        logging.error('An error occurred')
+        logging.error(error['common'])
         sys.exit()
 
 
 def handler_start(my_update: telegram.update, the_context: telegram.ext.CallbackContext):
 
-    user_language = my_update.effective_user.language_code
+    config = get_config(os.path.abspath(os.path.dirname(__file__)))
 
-    bot_keyboard = telegram.InlineKeyboardMarkup(
-        create_inline_keyboard(user_language, TOP))
+    user_language = get_language_code(my_update.effective_user)
 
     message_title = get_message_text('start_message_title', user_language)
     message_text = get_message_text('start_message_text', user_language)
@@ -104,17 +115,55 @@ def handler_start(my_update: telegram.update, the_context: telegram.ext.Callback
         my_update.effective_chat.id, text=f'*{message_title}*', parse_mode='Markdown', disable_web_page_preview=True)
 
     my_update.effective_chat.bot.send_photo(
-        my_update.effective_chat.id, 'blob:https://web.telegram.org/c801a070-d67f-4c1c-964a-19a082ae7414', parse_mode='Markdown')
+        my_update.effective_chat.id, photo=open(config['start_image'], 'rb'), parse_mode='Markdown')
 
     my_update.effective_chat.bot.send_message(
-        my_update.effective_chat.id, text=f'*{message_text}*', parse_mode='Markdown',
+        my_update.effective_chat.id, text=f'{message_text}', parse_mode='Markdown',
+        disable_web_page_preview=True)
+
+    keyboard_send(my_update, KEYBOARD_LAYER['top'])
+
+
+def handler_button(my_update: telegram.update, the_context: telegram.ext.CallbackContext):
+
+    pressed_button = my_update.callback_query.data
+
+    user_language = get_language_code(my_update.callback_query.from_user)
+
+    if pressed_button == KEYBOARD_BUTTONS['last']:
+        blog_entry = get_blog_entry_latest(int(KEYBOARD_BUTTONS['last']))
+
+    elif pressed_button == KEYBOARD_BUTTONS['second']:
+        blog_entry = get_blog_entry_latest(int(KEYBOARD_BUTTONS['second']))
+
+    message = blog_entry_create(user_language, blog_entry)
+
+    blog_entry_send(my_update, message)
+
+
+def handler_error(my_update: telegram.update, the_context: telegram.ext.CallbackContext):
+
+    logging.error('Update "%s" caused error "%s"',
+                  my_update, the_context.error)
+
+
+def keyboard_send(my_update: telegram.update, layer: int):
+
+    user_language = get_language_code(my_update.effective_user)
+
+    bot_keyboard = telegram.InlineKeyboardMarkup(
+        create_inline_keyboard(user_language, layer))
+        
+    my_update.effective_chat.bot.send_message(
+        my_update.effective_chat.id, text=f'*{get_message_text("keyboard", user_language)}*', parse_mode='Markdown',
         reply_markup=bot_keyboard, disable_web_page_preview=True)
 
 
 def create_inline_keyboard(language: str, layer: int) -> list:
 
-    if layer == TOP:
-        keyboard = [[get_keyboard_button(LAST, language)]]
+    if layer == KEYBOARD_LAYER['top']:
+        keyboard = [[get_keyboard_button(KEYBOARD_BUTTONS['last'], language),
+            get_keyboard_button(KEYBOARD_BUTTONS['second'], language)]]
 
     return(keyboard)
 
@@ -132,63 +181,53 @@ def get_keyboard_button(button_type: str, language: str) -> telegram.InlineKeybo
         return(telegram.InlineKeyboardButton(buttons[button_type][language], callback_data=button_type))
 
     except OSError as err:
-        logging.error(f'An OS error occurred: {err}')
-        sys.exit()
+        logging.error(f'{error["os_err"]}: {err}')
 
     except:
-        logging.error('An error occurred')
-        sys.exit()
+        logging.error(error['common'])
 
 
-def handler_button(my_update: telegram.update, the_context: telegram.ext.CallbackContext):
-
-    pressed_button = my_update.callback_query.data
-
-    user_language = get_language_code(my_update.callback_query.from_user)
-
-    if pressed_button == str(LAST):
-        blog_entry = get_blog_entry_by_date(str(datetime.date.today()))
-
-        message = message_create(user_language, blog_entry)
-
-        message_send(my_update, message)
-
-
-def handler_error(my_update: telegram.update, the_context: telegram.ext.CallbackContext):
-
-    logging.error('Update "%s" caused error "%s"',
-                  my_update, the_context.error)
-
-
-def message_create(language: str, blog_entry: dict) -> dict:
+def blog_entry_create(language: str, blog_entry: dict) -> dict:
 
     message = {'date': blog_entry['date'],
                'title': blog_entry[f'title_{language}'],
                'text': blog_entry[f'text_{language}'],
-               'image_url': blog_entry['image']['url'],
-               'image_caption': blog_entry['image']['caption']}
+               'media_type': blog_entry['media_type']
+               }
+
+    if blog_entry['media_type'].lower() == 'image':
+        message.update({'image_url': blog_entry['image']['url']})
+        message.update({'image_caption': blog_entry['image']['caption']})
+
+    elif blog_entry['media_type'].lower() == 'video':
+        message.update({'video_url': blog_entry[f'video_{language}']['url']})
+        message.update(
+            {'video_title': blog_entry[f'video_{language}']['title']})
 
     return(message)
 
 
-def message_send(my_update: telegram.update, message: dict):
+def blog_entry_send(my_update: telegram.update, message: dict):
 
-    user_language = get_language_code(my_update.effective_user)
+    current_chat = my_update.effective_chat
 
-    bot_keyboard = telegram.InlineKeyboardMarkup(
-        create_inline_keyboard(user_language, TOP))
+    current_chat.bot.send_message(current_chat.id, text=f'*{message["date"]} {message["title"]}*',
+                                  parse_mode='Markdown', disable_web_page_preview=True)
 
-    query = my_update.callback_query
+    if message['media_type'].lower() == 'image':
+        current_chat.bot.send_photo(
+            current_chat.id, message['image_url'], caption=message['image_caption']
+        )
 
-    query.bot.send_message(query.message.chat_id, text=f'*{message["date"]} {message["title"]}*',
-                           parse_mode='Markdown', disable_web_page_preview=True)
+    elif message['media_type'].lower() == 'video':
+        current_chat.bot.send_video(
+            current_chat.id, message['video_url'], caption=message['video_title']
+        )
 
-    if len(message['image_url']) > 0:
-        query.bot.send_photo(
-            query.message.chat_id, message['image_url'], caption=message['image_caption'])
+    current_chat.bot.send_message(current_chat.id, text=message['text'],
+                                  parse_mode='Markdown', disable_web_page_preview=True)
 
-    query.bot.send_message(query.message.chat_id, text=message['text'], reply_markup=bot_keyboard,
-                           parse_mode='Markdown', disable_web_page_preview=True)
+    keyboard_send(my_update, KEYBOARD_LAYER['top'])
 
 
 def get_language_code(user: telegram.User) -> str:
@@ -214,30 +253,49 @@ def get_blog_entry_by_date(date: str) -> dict:
             return('')
 
     except OSError as err:
-        logging.error(f'An OS error occurred: {err}')
+        logging.error(f'{error["os_err"]}: {err}')
 
     except:
-        logging.error('An error occurred')
+        logging.error(error['common'])
 
 
-def get_blog_latest(today: str) -> dict:
+def get_blog_entry_latest(mode: int) -> dict:
 
     try:
         config = get_config(os.path.abspath(os.path.dirname(__file__)))
 
         mosaic_blog = data_read_blog_from_file(config)
+        
+        if mode == int(KEYBOARD_BUTTONS['last']):
+            requested_date = datetime.date.today()
+
+        elif mode == int(KEYBOARD_BUTTONS['second']):
+            requested_date = datetime.date.today() - datetime.timedelta(days=1)
+
+        latest_entry = None
+
+        for blog_entry in mosaic_blog:
+            blog_entry_date = datetime.datetime.strptime(
+                blog_entry['date'], '%Y-%m-%d').date()
+            if blog_entry_date == requested_date:
+                latest_entry = blog_entry
+                break
+
+            else:
+
+                if blog_entry_date < requested_date and latest_entry == None:
+                    latest_entry = blog_entry
+
+                elif blog_entry_date < requested_date and blog_entry_date > datetime.datetime.strptime(latest_entry['date'], '%Y-%m-%d').date():
+                    latest_entry = blog_entry
+
+        return(latest_entry)
 
     except OSError as err:
-        logging.error(f'An OS error occurred: {err}')
+        logging.error(f'{error["os_err"]}: {err}')
 
     except:
-        logging.error('An error occurred')
-
-
-def get_language_from_user(my_update: telegram.update) -> str:
-
-    language = 'DE'
-    return(language)
+        logging.error(error['common'])
 
 
 def get_message_text(message_type: str, language: str) -> str:
@@ -251,11 +309,11 @@ def get_message_text(message_type: str, language: str) -> str:
             return(messages['messages'][message_type][language])
 
     except OSError as err:
-        logging.error(f'An OS error occurred: {err}')
+        logging.error(f'{error["os_err"]}: {err}')
         sys.exit()
 
     except:
-        logging.error('An error occurred')
+        logging.error(error['common'])
         sys.exit()
 
 
@@ -271,7 +329,7 @@ def get_config(script_path: str) -> dict:
             return(config_data)
 
     except Exception as err:
-        logging.error(f'An error occurred: {err}')
+        logging.error(f'{error["common"]}: {err}')
         sys.exit()
 
 

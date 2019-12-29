@@ -11,12 +11,13 @@ The idea behind this bot is to provide this information to the users by using yo
 ## Features of the bot
 
 - Sending story and pictures to the user by request
-  - Latest one
+  - Latest one (done)
+  - Second latest (done)
   - With specific date
   - Message contains
-    - Title
-    - Small picture
-    - Story
+    - Title (done)
+    - Small picture (done)
+    - Story (done)
     - Link to the appropriate entry in the web app
     - Link to the larger picture
 - Sending data of the expedition to the user by request
@@ -29,7 +30,8 @@ The idea behind this bot is to provide this information to the users by using yo
   - Latest one
   - With specific date
 - Providing an Inline Keyboard to get
-  - Latest Story and picture
+  - Latest Story and picture (done)
+  - Calendar
   - Latest weather data
   - Latest ice extend
 - Languages
