@@ -1,0 +1,15 @@
+data
+todo.md
+
+# Code related files
+.vscode
+mosaic_expedition.code-workspace
+
+# Python related stuff
+__pycache__
+
+# Deployment scripts (for security reasons)
+deploy
+
+# Log files
+log

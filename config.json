@@ -2,5 +2,6 @@
     "data_path": "/mnt/c/Users/torsten/OneDrive/Dokumente/Development/Python/mosaic_expedition/data",
     "data_file": "mosaic_data",
     "mosaic_url": "https://follow.mosaic-expedition.org/wp-json/data-api/v1/data?nonce=19840730",
-    "start_image": "img/start_image.png"
+    "start_image": "img/start_image.png",
+    "token_filename": "/mnt/c/Users/torsten/OneDrive/Dokumente/Development/Python/mosaic_expedition/data/bot_token.dev"
 }
