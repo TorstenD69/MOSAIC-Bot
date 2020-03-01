@@ -5,7 +5,7 @@ import json
 import datetime
 import os, sys
 import logging
-import mosaic
+import run_mosaic_bot as mosaic
 
 FILE_TYPE = 'json'
 
@@ -45,7 +45,7 @@ def data_download(config: dict) -> str:
     except (requests.ConnectionError, requests.HTTPError, requests.Timeout) as err:
         my_logger.error(f'The HTTP requests has raised an error: {err}')
         sys.exit()
-        
+
     except OSError as err:
         my_logger.error(f'An OS error occurred: {err}')
         sys.exit()
@@ -86,9 +86,9 @@ def data_activate(today_filename: str, config: dict) -> bool():
 
         my_logger.info(f'Activation of data successfull')
         return(True)
-    
+
     except OSError as err:
-        
+
         my_logger.error(f'An error occurred: {err}')
         if not(os.path.exists(data_filename)):
             my_logger.info(f'Data file missing. Try to restore')

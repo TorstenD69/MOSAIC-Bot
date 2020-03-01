@@ -13,3 +13,9 @@ deploy
 
 # Log files
 log
+
+# Sonarqube scanner files
+.scannerwork
+
+# Reserved for later development
+mosaic_blog.py

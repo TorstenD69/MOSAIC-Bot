@@ -5,8 +5,8 @@
             "en": "MOSAIC Expedition 2019/2020"
         },
         "start_message_text": {
-            "de": "Hallo,\n\nes freut mich, dass Du Dich so wie ich für die MOSAIC Expedition (https://mosaic-expedition.org) interessierst. Mit diesem Bot kannst Du Dir jeden Tag den aktuellen Eintrag aus dem MOSAIC Blog (https://follow.mosaic-expedition.org) anzeigen lassen",
-            "en": "Start message tbd"
+            "de": "Hallo,\n\nes freut mich, dass Du Dich so wie ich für die große MOSAIC Expedition (https://mosaic-expedition.org) interessierst. Mit diesem Bot kannst Du Dir immer die aktuellen Einträge aus dem MOSAIC Blog (https://follow.mosaic-expedition.org) anzeigen lassen. Mit dem Kalender kannst Du darüber hinaus auch in älteren Einträgen schmökern.\nIch wünsche Dir viel Spaß.",
+            "en": "Hello,\n\nI am glad that you are interested in the great MOSAIC expedition (https://mosaic-expedition.org) as I am. With this bot you can always view the latest entries from the MOSAIC blog (https://follow.mosaic-expedition.org). With the calendar you can also browse through older entries.\n\nI wish you a lot of fun."
         },
         "nothing_found": {
             "de": "Wir konnten zu Deiner Anfrage leider nichts finden",
@@ -27,20 +27,55 @@
         "keyboard": {
             "de": "\nWas soll ich anzeigen?",
             "en": "\nWhat should I show?"
+        },
+        "year_keyboard": {
+            "de": "\nWähle das Jahr:",
+            "en": "\nChoose year:"
+        },
+        "month_keyboard": {
+            "de": "\nWähle den Monat:",
+            "en": "\nChoose month:"
+        },
+        "day_keyboard": {
+            "de": "\nTag auswählen:",
+            "en": "\nChoose day:"
         }
     },
     "buttons": {
         "1": {
-            "de": "Aktueller Eintrag",
-            "en": "Latest entry"
+            "name": "latest",
+            "caption": {
+                "de": "Aktueller Eintrag",
+                "en": "Latest entry"
+            }
         },
         "2": {
-            "de": "Vorletzter Eintrag",
-            "en": "Second entry"
+            "name": "second",
+            "caption": {
+                "de": "Vorletzter Eintrag",
+                "en": "Second entry"
+            }
         },
         "3": {
-            "de": "Tag auswählen",
-            "en": "Choose day"
+            "name": "calendar",
+            "caption": {
+                "de": "Kalender",
+                "en": "Calendar"
+            }
+        },
+        "4": {
+            "name": "top",
+            "caption": {
+                "de": "Hauptmenü",
+                "en": "Main menu"
+            }
+        },
+        "5": {
+            "name": "back",
+            "caption": {
+                "de": "Zurück",
+                "en": "Back"
+            }
         }
     }
 }
